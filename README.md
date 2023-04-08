@@ -1,8 +1,10 @@
 # Skyrender
 
-This is a simple utility to generate a skybox from star data.
+A simple utility to generate a skybox from star data.
 
-**WARNING: This program downloads 100+ GB of astronomy data the first time it is run.**
+**WARNING: This program downloads 100+ GB of astronomy data the first time it is run.** You probably just want to download one of the pre-generated cubemaps from the releases page.
+
+![Cubemap preview](preview.png)
 
 # License
 
