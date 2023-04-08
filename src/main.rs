@@ -161,7 +161,7 @@ fn main() {
             255,
         ])
     });
-    img.save(format!("cubemap-v1-{SIZE}x{SIZE}.png")).unwrap();
+    img.save(format!("cubemap-{SIZE}x{SIZE}.png")).unwrap();
 
     let mut img2 = image::ImageBuffer::new(4 * SIZE as u32, 3 * SIZE as u32);
     for (i, (x, y)) in [(2, 1), (0, 1), (1, 0), (1, 2), (3, 1), (1, 1)]
@@ -175,5 +175,5 @@ fn main() {
             SIZE as i64 * y,
         );
     }
-    img2.save(format!("net-v1-{SIZE}x{SIZE}.png")).unwrap();
+    img2.save(format!("net-{SIZE}x{SIZE}.png")).unwrap();
 }
