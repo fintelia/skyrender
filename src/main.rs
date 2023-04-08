@@ -4,6 +4,7 @@ use std::{
     time::Duration,
 };
 
+use image::GenericImage;
 use rayon::prelude::*;
 
 fn parse_f32(bytes: &[u8]) -> Option<f32> {
@@ -72,7 +73,7 @@ fn main() {
         .map(|i| blackbody::temperature_to_rgb(1000.0 + (i as f32 * 100.0)))
         .collect::<Vec<_>>();
 
-    const MIN_MAGNITUDE: f32 = 9.0;
+    const MIN_MAGNITUDE: f32 = 7.0;
     const SIZE: usize = 1024;
     let mut cubemap = vec![0.0f32; SIZE * SIZE * 6 * 3];
     for (_hash, filename) in file_list {
@@ -88,10 +89,9 @@ fn main() {
             let mag = chunk[2];
             let temp = chunk[3];
 
-            if ra == 0.0 && dec == 0.0 || mag < MIN_MAGNITUDE {
+            if mag < MIN_MAGNITUDE {
                 continue;
             }
-
             let color = colors[((temp - 1000.0).max(0.0).round() as usize / 100).min(399)];
 
             let x = -ra.sin() * dec.cos();
@@ -152,7 +152,7 @@ fn main() {
     }
 
     let scale = 255.0 * 1000.0;
-    image::ImageBuffer::from_fn(SIZE as u32, SIZE as u32 * 6, |x, y| {
+    let mut img = image::ImageBuffer::from_fn(SIZE as u32, SIZE as u32 * 6, |x, y| {
         let index = ((y as usize * SIZE) + x as usize) * 3;
         image::Rgba([
             (cubemap[index] * scale).min(255.0) as u8,
@@ -160,7 +160,20 @@ fn main() {
             (cubemap[index + 2] * scale).min(255.0) as u8,
             255,
         ])
-    })
-    .save("output.png")
-    .unwrap();
+    });
+    img.save(format!("cubemap-v1-{SIZE}x{SIZE}.png")).unwrap();
+
+    let mut img2 = image::ImageBuffer::new(4 * SIZE as u32, 3 * SIZE as u32);
+    for (i, (x, y)) in [(2, 1), (0, 1), (1, 0), (1, 2), (3, 1), (1, 1)]
+        .into_iter()
+        .enumerate()
+    {
+        image::imageops::overlay(
+            &mut img2,
+            &*img.sub_image(0, (i * SIZE) as u32, SIZE as u32, SIZE as u32),
+            SIZE as i64 * x,
+            SIZE as i64 * y,
+        );
+    }
+    img2.save(format!("net-v1-{SIZE}x{SIZE}.png")).unwrap();
 }
