@@ -13,7 +13,7 @@ struct Args {
     #[clap(value_name = "RESOLUTION", index = 1, default_value = "1024")]
     size: usize,
     /// Cutoff magnitude to include stars in the cubemap.
-    #[clap(value_name = "MIN_MAGNITUDE", index = 2, default_value = "7.0")]
+    #[clap(value_name = "MIN_MAGNITUDE", index = 2, default_value = "6.0")]
     min_magnitude: f32,
 }
 

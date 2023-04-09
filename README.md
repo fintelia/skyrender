@@ -15,7 +15,7 @@ cargo run --release
 
 This will stream about 700 GB Gaia data and save it in condensed form (still ~27 GB) to your local cache directory. If interrupted, it will resume where it left off. Once complete, the program will output `cubemap-1024x1024.png` and `net-1024x1024.png` to the local directory.
 
-Stars brighter than a set magnitude (defaulting to 7.0) are not written to the cubemap. They are instead stored in `bright-stars.bin` so they can be composited on afterwards.
+Stars brighter than a set magnitude (defaulting to 6.0) are not written to the cubemap. They are instead stored in `bright-stars.bin` so they can be composited on afterwards.
 
 # License
 
