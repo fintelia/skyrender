@@ -145,14 +145,14 @@ fn main() {
         }
     }
 
-    let element_area = |x, y| f32::atan2(x * y, f32::sqrt(x * x + y * y + 1.0));
-    let inv_size = 1.0 / size as f32;
+    let element_area = |x, y| f64::atan2(x * y, f64::sqrt(x * x + y * y + 1.0));
+    let inv_size = 1.0 / size as f64;
     for face in 0..6 {
         for y in 0..size {
             for x in 0..size {
                 // See https://www.rorydriscoll.com/2012/01/15/cubemap-texel-solid-angle
-                let u = 2.0 * (x as f32 + 0.5) / size as f32 - 1.0;
-                let v = 2.0 * (y as f32 + 0.5) / size as f32 - 1.0;
+                let u = 2.0 * (x as f64 + 0.5) / size as f64 - 1.0;
+                let v = 2.0 * (y as f64 + 0.5) / size as f64 - 1.0;
                 let x0 = u - inv_size;
                 let y0 = v - inv_size;
                 let x1 = u + inv_size;
@@ -160,7 +160,7 @@ fn main() {
                 let solid_angle =
                     element_area(x0, y0) - element_area(x0, y1) - element_area(x1, y0)
                         + element_area(x1, y1);
-                let inv_area = 1.0 / solid_angle;
+                let inv_area = 1.0 / solid_angle as f32;
 
                 let index = (face * size * size) + (y * size) + x;
                 cubemap[index * 3] *= inv_area;
