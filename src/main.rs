@@ -3,22 +3,27 @@ use std::{
     time::Duration,
 };
 
+use clap::Parser;
 use image::GenericImage;
 use rayon::prelude::*;
+
+#[derive(Parser, Debug)]
+struct Args {
+    /// Resolution of each cubemap face.
+    #[clap(value_name = "RESOLUTION", index = 1, default_value = "1024")]
+    size: usize,
+    /// Cutoff magnitude to include stars in the cubemap.
+    #[clap(value_name = "MIN_MAGNITUDE", index = 2, default_value = "7.0")]
+    min_magnitude: f32,
+}
 
 fn parse_f32(bytes: &[u8]) -> Option<f32> {
     String::from_utf8_lossy(bytes).parse::<f32>().ok()
 }
 
 fn main() {
-    let size = std::env::args()
-        .nth(1)
-        .and_then(|s| s.parse::<usize>().ok())
-        .unwrap_or(1024);
-    let min_magnitude = std::env::args()
-        .nth(2)
-        .and_then(|s| s.parse::<f32>().ok())
-        .unwrap_or(7.0);
+    let args = Args::parse();
+    let size = args.size;
 
     let directory = dirs::cache_dir().unwrap().join("skyrender");
     std::fs::create_dir_all(&directory).unwrap();
@@ -104,7 +109,7 @@ fn main() {
                 colors[((temp - 1000.0).max(0.0).round() as usize / 100).min(399)]
             };
 
-            if mag < min_magnitude {
+            if mag < args.min_magnitude {
                 bright_stars.extend_from_slice(&ra.to_le_bytes());
                 bright_stars.extend_from_slice(&dec.to_le_bytes());
                 bright_stars.extend_from_slice(&mag.to_le_bytes());

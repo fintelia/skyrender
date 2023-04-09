@@ -9,6 +9,7 @@ edition = "2021"
 atomicwrites = "0.4.0"
 blackbody = "0.0.0"
 bytemuck = "1.13.1"
+clap = { version = "4.2.1", features = ["derive"] }
 dirs = "5.0.0"
 flate2 = "1.0.25"
 image = "0.24.6"

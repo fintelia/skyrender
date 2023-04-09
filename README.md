@@ -8,14 +8,14 @@ A simple utility to generate a skybox from star data.
 
 # Usage
 
-Compile and run with (replace 1024 with other values to control cubemap resolution):
+Compile and run with:
 ```
-cargo run --release -- 1024
+cargo run --release
 ```
 
 This will stream about 700 GB Gaia data and save it in condensed form (still ~27 GB) to your local cache directory. If interrupted, it will resume where it left off. Once complete, the program will output `cubemap-1024x1024.png` and `net-1024x1024.png` to the local directory.
 
-Stars brighter than a set magnitude (specified by an optional second command line argument, defaulting to 7.0) are not written to the cubemap. They are instead stored in `bright-stars.bin` so they can be composited on afterwards.
+Stars brighter than a set magnitude (defaulting to 7.0) are not written to the cubemap. They are instead stored in `bright-stars.bin` so they can be composited on afterwards.
 
 # License
 
