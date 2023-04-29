@@ -10,11 +10,21 @@ use rayon::prelude::*;
 #[derive(Parser, Debug)]
 struct Args {
     /// Resolution of each cubemap face.
-    #[clap(value_name = "RESOLUTION", index = 1, default_value = "1024")]
-    size: usize,
+    #[clap(short, long, default_value = "1024")]
+    resolution: usize,
+
     /// Cutoff magnitude to include stars in the cubemap.
-    #[clap(value_name = "MIN_MAGNITUDE", index = 2, default_value = "6.0")]
-    min_magnitude: f32,
+    #[clap(short, long)]
+    min_magnitude: Option<f32>,
+
+    /// Exposure value to use for the non-HDR output images.
+    #[clap(short, long, default_value = "-7.0")]
+    exposure_value: f32,
+
+    /// Zstandard compression level to use for the output images. Higher values result in smaller
+    /// files, but take longer to compress. The current maxixum value is 22.
+    #[clap(short, long, default_value = "22")]
+    compression_level: i32,
 }
 
 fn parse_f32(bytes: &[u8]) -> Option<f32> {
@@ -23,7 +33,7 @@ fn parse_f32(bytes: &[u8]) -> Option<f32> {
 
 fn main() {
     let args = Args::parse();
-    let size = args.size;
+    let size = args.resolution;
 
     let directory = dirs::cache_dir().unwrap().join("skyrender");
     std::fs::create_dir_all(&directory).unwrap();
@@ -109,7 +119,7 @@ fn main() {
                 colors[((temp - 1000.0).max(0.0).round() as usize / 100).min(399)]
             };
 
-            if mag < args.min_magnitude {
+            if mag < args.min_magnitude.unwrap_or(-10.0) {
                 bright_stars.extend_from_slice(&ra.to_le_bytes());
                 bright_stars.extend_from_slice(&dec.to_le_bytes());
                 bright_stars.extend_from_slice(&mag.to_le_bytes());
@@ -135,9 +145,9 @@ fn main() {
             } else if -y >= ax.max(az) {
                 (2, x, -z)
             } else if z >= ax.max(ay) {
-                (4, -x, y)
+                (5, -x, y)
             } else {
-                (5, x, y)
+                (4, x, y)
             };
             let u = (((u / ax.max(ay).max(az) * 0.5 + 0.5) * size as f32) as usize).min(size - 1);
             let v = (((v / ax.max(ay).max(az) * 0.5 + 0.5) * size as f32) as usize).min(size - 1);
@@ -175,7 +185,7 @@ fn main() {
         }
     }
 
-    let scale = 255.0 * 1000.0;
+    let scale = 255.0 * f32::exp2(3.0 - args.exposure_value);
     let mut img = image::ImageBuffer::from_fn(size as u32, size as u32 * 6, |x, y| {
         let index = ((y as usize * size) + x as usize) * 3;
         image::Rgba([
@@ -185,10 +195,11 @@ fn main() {
             255,
         ])
     });
-    img.save(format!("cubemap-{size}x{size}.png")).unwrap();
+    img.save(format!("cubemap-{size:04}x{size:04}.png"))
+        .unwrap();
 
     let mut img2 = image::ImageBuffer::new(4 * size as u32, 3 * size as u32);
-    for (i, (x, y)) in [(2, 1), (0, 1), (1, 0), (1, 2), (3, 1), (1, 1)]
+    for (i, (x, y)) in [(2, 1), (0, 1), (1, 0), (1, 2), (1, 1), (3, 1)]
         .into_iter()
         .enumerate()
     {
@@ -199,7 +210,28 @@ fn main() {
             size as i64 * y,
         );
     }
-    img2.save(format!("net-{size}x{size}.png")).unwrap();
+    img2.save(format!("net-{size:04}x{size:04}.png")).unwrap();
 
-    std::fs::write("bright-stars.bin", bright_stars).unwrap();
+    let mut hdr_pixels = Vec::new();
+    for v in cubemap.chunks(3) {
+        hdr_pixels.extend_from_slice(&envmap_tools::rgb9e5::float3_to_rgb9e5(v).to_le_bytes());
+    }
+    std::fs::write(
+        format!("hdr-cubemap-{size:04}x{size:04}.ktx2"),
+        ktx2encode::encode_ktx2(
+            &[hdr_pixels],
+            size as u32,
+            size as u32,
+            0,
+            0,
+            true,
+            ktx2encode::Format::E5B9G9R9_UFLOAT_PACK32,
+            args.compression_level,
+        ),
+    )
+    .unwrap();
+
+    if !bright_stars.is_empty() {
+        std::fs::write("bright-stars.bin", bright_stars).unwrap();
+    }
 }
