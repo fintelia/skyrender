@@ -1,1 +1,5 @@
 /target
+cubemap-*.png
+hdr-cubemap-*.ktx2
+net-*.png
+bright-stars.bin
