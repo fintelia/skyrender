@@ -1,10 +1,14 @@
 use std::{
+    fs::File,
     io::{Cursor, Read, Write},
     time::Duration,
 };
 
 use clap::Parser;
-use image::GenericImage;
+use image::{
+    codecs::png::{CompressionType, FilterType, PngEncoder},
+    GenericImage, ImageEncoder,
+};
 use rayon::prelude::*;
 
 #[derive(Parser, Debug)]
@@ -195,8 +199,13 @@ fn main() {
             255,
         ])
     });
-    img.save(format!("cubemap-{size:04}x{size:04}.png"))
-        .unwrap();
+    PngEncoder::new_with_quality(
+        File::create(format!("cubemap-{size:04}x{size:04}.png")).unwrap(),
+        CompressionType::Best,
+        FilterType::Adaptive,
+    )
+    .write_image(&*img, size as u32, size as u32 * 6, image::ColorType::Rgba8)
+    .unwrap();
 
     let mut img2 = image::ImageBuffer::new(4 * size as u32, 3 * size as u32);
     for (i, (x, y)) in [(2, 1), (0, 1), (1, 0), (1, 2), (1, 1), (3, 1)]
@@ -210,7 +219,18 @@ fn main() {
             size as i64 * y,
         );
     }
-    img2.save(format!("net-{size:04}x{size:04}.png")).unwrap();
+    PngEncoder::new_with_quality(
+        File::create(format!("net-{size:04}x{size:04}.png")).unwrap(),
+        CompressionType::Best,
+        FilterType::Adaptive,
+    )
+    .write_image(
+        &*img2,
+        4 * size as u32,
+        3 * size as u32,
+        image::ColorType::Rgba8,
+    )
+    .unwrap();
 
     let mut hdr_pixels = Vec::new();
     for v in cubemap.chunks(3) {
