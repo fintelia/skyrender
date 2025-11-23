@@ -17,6 +17,25 @@ This will stream about 700 GB Gaia data and save it in condensed form (still ~27
 
 Stars brighter than a set magnitude (defaulting to 6.0) are not written to the cubemap. They are instead stored in `bright-stars.bin` so they can be composited on afterwards.
 
+# Suggestions for use in Bevy
+
+The HDR cubemaps in ktx2 format are suggested for use in Bevy. You'll also want
+to make sure the exposure is set appropriately for the skybox. For example:
+
+```rust
+commands.spawn((
+    Skybox {
+        image: skybox_handle.clone(),
+        brightness: 1.0,
+        ..default()
+    },
+    Exposure { ev100: -3.0 },
+));
+```
+
+Setting even smaller values for expoure will make the Milky Way more visible but
+causes the stars to get overexposed.
+
 # License
 
 Skyrender is dual licensed under MIT and Apache 2.0 licenses; you may pick either at your option. The cubemaps themselves may be used under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
