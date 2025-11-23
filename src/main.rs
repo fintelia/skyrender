@@ -86,9 +86,15 @@ fn main() {
             }
 
             let parts: Vec<_> = line.split(|b| *b == b',').collect();
-            let Some(ra) = parse_f32(parts[5]) else { continue };
-            let Some(dec) = parse_f32(parts[7]) else { continue };
-            let Some(mag) = parse_f32(parts[69]) else { continue };
+            let Some(ra) = parse_f32(parts[5]) else {
+                continue;
+            };
+            let Some(dec) = parse_f32(parts[7]) else {
+                continue;
+            };
+            let Some(mag) = parse_f32(parts[69]) else {
+                continue;
+            };
             let temp = parse_f32(parts[130]).unwrap_or(0.0);
             packed.extend_from_slice(&[ra, dec, mag, temp]);
         }
@@ -204,7 +210,12 @@ fn main() {
         CompressionType::Best,
         FilterType::Adaptive,
     )
-    .write_image(&*img, size as u32, size as u32 * 6, image::ColorType::Rgba8)
+    .write_image(
+        &*img,
+        size as u32,
+        size as u32 * 6,
+        image::ExtendedColorType::Rgba8,
+    )
     .unwrap();
 
     let mut img2 = image::ImageBuffer::new(4 * size as u32, 3 * size as u32);
@@ -228,7 +239,7 @@ fn main() {
         &*img2,
         4 * size as u32,
         3 * size as u32,
-        image::ColorType::Rgba8,
+        image::ExtendedColorType::Rgba8,
     )
     .unwrap();
 

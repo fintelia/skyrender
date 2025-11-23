@@ -6,14 +6,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-atomicwrites = "0.4.0"
+atomicwrites = "0.4.4"
 blackbody = "0.0.0"
-bytemuck = "1.13.1"
-clap = { version = "4.2.1", features = ["derive"] }
-dirs = "5.0.0"
-flate2 = "1.0.25"
-image = "0.24.6"
-rayon = "1.7.0"
-reqwest = { version = "0.11.16", features = ["blocking"] }
-envmap_tools = { package = "bevy_mod_environment_map_tools", git = "https://github.com/DGriffin91/bevy_mod_environment_map_tools", rev = "e4f8b34" }
+bytemuck = "1.24.0"
+clap = { version = "4.5.53", features = ["derive"] }
+dirs = "6.0.0"
+flate2 = "1.1.5"
+image = "0.25.9"
+rayon = "1.11.0"
+reqwest = { version = "0.12.24", features = ["blocking"] }
+envmap_tools = { package = "bevy_mod_environment_map_tools", git = "https://github.com/DGriffin91/bevy_mod_environment_map_tools", rev = "dfbe60a" }
 ktx2encode = { git = "https://github.com/fintelia/ktx2encode", rev = "8dc3914" }
