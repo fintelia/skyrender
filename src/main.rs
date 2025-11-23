@@ -140,24 +140,24 @@ fn main() {
                 continue;
             }
 
-            let x = -ra.sin() * dec.cos();
-            let y = ra.cos() * dec.cos();
-            let z = dec.sin();
+            let x = ra.sin() * dec.cos();
+            let y = dec.sin();
+            let z = ra.cos() * dec.cos();
             let ax = x.abs();
             let ay = y.abs();
             let az = z.abs();
             let (face, u, v) = if x >= ay.max(az) {
-                (0, z, y)
+                (0, -z, -y)
             } else if -x >= ay.max(az) {
-                (1, -z, y)
+                (1, z, -y)
             } else if y >= ax.max(az) {
-                (3, x, z)
+                (2, x, z)
             } else if -y >= ax.max(az) {
-                (2, x, -z)
+                (3, x, -z)
             } else if z >= ax.max(ay) {
-                (5, -x, y)
+                (4, x, -y)
             } else {
-                (4, x, y)
+                (5, -x, -y)
             };
             let u = (((u / ax.max(ay).max(az) * 0.5 + 0.5) * size as f32) as usize).min(size - 1);
             let v = (((v / ax.max(ay).max(az) * 0.5 + 0.5) * size as f32) as usize).min(size - 1);
