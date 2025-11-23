@@ -36,6 +36,8 @@ commands.spawn((
 Setting even smaller values for expoure will make the Milky Way more visible but
 causes the stars to get overexposed.
 
+The orientation of the cubemap is arranged so that the +Y axis points towards Polaris.
+
 # License
 
 Skyrender is dual licensed under MIT and Apache 2.0 licenses; you may pick either at your option. The cubemaps themselves may be used under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
