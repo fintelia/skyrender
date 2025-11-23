@@ -33,8 +33,8 @@ commands.spawn((
 ));
 ```
 
-Setting even smaller values for expoure will make the Milky Way more visible but
-causes the stars to get overexposed.
+You can also try even smaller ev100 values like -6 or -8, which will make the
+Milky Way more visible but causes the stars to get overexposed.
 
 The orientation of the cubemap is arranged so that the +Y axis points towards Polaris.
 
