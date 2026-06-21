@@ -1,3 +1,6 @@
+**This project has migrated to Codeberg: https://codeberg.org/fintelia/skyrender**
+
+---
 # Skyrender
 
 A simple utility to generate a skybox from star data.
